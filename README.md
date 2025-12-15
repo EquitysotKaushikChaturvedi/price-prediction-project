@@ -84,7 +84,7 @@ I trained two models to see which one performs better:
    You will see the **Black & White UI**.
    - **Feature**: If you select "Apple" as the brand, the form automatically adjusts to show only Apple-relevant options (like A-series chips) and hides Android-specific options.
 
-## 📡 API Usage
+##  API Usage
 
 You can also use the API directly via tools like Postman or `curl`.
 
@@ -112,7 +112,7 @@ You can also use the API directly via tools like Postman or `curl`.
 }
 ```
 
-## 🛠 Technologies Used
+##  Technologies Used
 
 - **Python**: Core language.
 - **Pandas & NumPy**: Data manipulation.
