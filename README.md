@@ -1,4 +1,4 @@
-# Smartphone Price Prediction Project 📱
+# Smartphone Price Prediction Project 
 
 Welcome to the **Smartphone Price Prediction Project**! This project is an end-to-end machine learning application designed to predict the price of a smartphone based on its specifications (like Brand, RAM, Storage, etc.). It comes with a complete backend (FastAPI), a stylish black-and-white frontend, and a training pipeline.
 
