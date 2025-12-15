@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartphone Price Predictor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Price Predictor</h1>
+        <form id="predictForm">
+            <div class="form-group">
+                <label for="brand">Brand</label>
+                <select id="brand" name="brand" required onchange="updateProcessorOptions()">
+                    <option value="" disabled selected>Select Brand</option>
+                    <option value="apple">Apple</option>
+                    <option value="samsung">Samsung</option>
+                    <option value="xiaomi">Xiaomi</option>
+                    <option value="oppo">Oppo</option>
+                    <option value="vivo">Vivo</option>
+                    <option value="oneplus">OnePlus</option>
+                    <option value="realme">Realme</option>
+                    <option value="google">Google</option>
+                    <!-- Add more as needed, keeping it simple for UI demo -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ram">RAM (GB)</label>
+                <input type="number" id="ram" name="ram" min="1" max="64" required>
+            </div>
+
+            <div class="form-group">
+                <label for="storage">Storage (GB)</label>
+                <input type="number" id="storage" name="storage" min="8" max="2048" required>
+            </div>
+
+            <div class="form-group">
+                <label for="battery">Battery (marginBottom)</label>
+                <input type="number" id="battery" name="battery" min="1000" max="10000" required>
+            </div>
+
+            <div class="form-group">
+                <label for="camera">Main Camera (MP)</label>
+                <input type="number" id="camera" name="camera" min="2" max="200" step="0.1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="screen_size">Screen Size (Inches)</label>
+                <input type="number" id="screen_size" name="screen_size" min="3.0" max="10.0" step="0.1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="processor">Processor</label>
+                <select id="processor" name="processor" required>
+                    <option value="" disabled selected>Select Processor</option>
+                    <option value="apple" class="apple-only">Apple A-Series</option>
+                    <option value="snapdragon" class="android-only">Snapdragon</option>
+                    <option value="mediatek" class="android-only">MediaTek</option>
+                    <option value="exynos" class="android-only">Exynos</option>
+                    <option value="unisoc" class="android-only">Unisoc</option>
+                    <option value="google" class="android-only">Google Tensor</option>
+                    <option value="kirin" class="android-only">Kirin</option>
+                </select>
+            </div>
+
+            <button type="submit">Predict Price</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function updateProcessorOptions() {
+            const brand = document.getElementById('brand').value;
+            const processorSelect = document.getElementById('processor');
+            const appleOptions = document.querySelectorAll('.apple-only');
+            const androidOptions = document.querySelectorAll('.android-only');
+
+            // Reset selection
+            processorSelect.value = "";
+
+            if (brand === 'apple') {
+                // Show Apple options, hide Android options
+                appleOptions.forEach(opt => opt.style.display = 'block');
+                androidOptions.forEach(opt => opt.style.display = 'none');
+                // Auto-select Apple if it's the only one
+                appleOptions[0].selected = true; 
+            } else {
+                // Hide Apple options, show Android options
+                appleOptions.forEach(opt => opt.style.display = 'none');
+                androidOptions.forEach(opt => opt.style.display = 'block');
+            }
+        }
+
+        document.getElementById('predictForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = "Calculating...";
+
+            const formData = new FormData(e.target);
+            const data = {
+                brand: formData.get('brand'),
+                ram: parseInt(formData.get('ram')),
+                storage: parseInt(formData.get('storage')),
+                battery: parseInt(formData.get('battery')),
+                camera: parseFloat(formData.get('camera')),
+                screen_size: parseFloat(formData.get('screen_size')),
+                processor: formData.get('processor')
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Prediction failed');
+                }
+
+                const result = await response.json();
+                resultDiv.innerHTML = `
+                    <h2>Estimated Price</h2>
+                    <p style="font-size: 2em; font-weight: bold;">₹${result.predicted_price}</p>
+                    <p style="font-size: 0.8em; opacity: 0.7;">Based on provided specs</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        });
+        
+        // Initialize on load
+        updateProcessorOptions();
+    </script>
+</body>
+</html>
